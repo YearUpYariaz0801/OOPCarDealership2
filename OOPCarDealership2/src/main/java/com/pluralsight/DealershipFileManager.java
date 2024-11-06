@@ -8,11 +8,11 @@ import java.io.FileWriter;
 public class DealershipFileManager {
 
 
-    public static Dealership getFromCSV(String filename) {
+    public static Dealership getFromCSV(String filename){
 
         Dealership dealership = null;
 
-        try {
+        try{
             BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
 
             String line;
@@ -23,9 +23,9 @@ public class DealershipFileManager {
             String phone = firstLineData[2];
             dealership = new Dealership(name, address, phone);
 
-            while ((line = bufferedReader.readLine()) != null) {
+            while((line = bufferedReader.readLine()) != null){
                 String[] newLine = line.split("\\|");
-                if (newLine.length == 8) {
+                if(newLine.length == 8){
                     int vinNumber = Integer.parseInt(newLine[0]);
                     int makeYear = Integer.parseInt(newLine[1]);
                     String make = newLine[2];
@@ -39,37 +39,36 @@ public class DealershipFileManager {
                 }
             }
             bufferedReader.close();
-        } catch (Exception e) {
+        }catch(Exception e){
             e.printStackTrace();
         }
 
         return dealership;
     }
 
-
-    public static void saveToCSV(Dealership dealership, String filename) {
-
+    public static void saveToCSV(Dealership dealership, String filename){
         try {
             //Creating a file writer and assigning the file writer to the buffered writer.
             FileWriter fw = new FileWriter(filename);
             BufferedWriter bw = new BufferedWriter(fw);
 
             bw.write(getEncodedDealershipHeader(dealership));
+            bw.write(dealership.encode());
+
             // Loop through transactions and write each one to the file
             for (Vehicle vehicle : dealership.getAllVehicles()) {
                 bw.write(getEncodedVehicle(vehicle));
             }
             bw.close(); // Close the BufferedWriter
-        } catch (Exception e) {
+
+        } catch (IOException e){
             System.out.println("Error while saving Transactions: " + e.getMessage());
         }
     }
-
-    private static String getEncodedDealershipHeader(Dealership dealership) {
+    private static String getEncodedDealershipHeader(Dealership dealership){
         return dealership.getName() + "|" + dealership.getAddress() + "|" + dealership.getPhone() + "\n";
     }
-
-    private static String getEncodedVehicle(Vehicle vehicle) {
+    private static String getEncodedVehicle(Vehicle vehicle){
         return new StringBuilder()
                 .append(vehicle.getVin()).append("|")
                 .append(vehicle.getYear()).append("|")
@@ -80,5 +79,5 @@ public class DealershipFileManager {
                 .append(vehicle.getOdometer()).append("|")
                 .append(vehicle.getPrice()).append("\n").toString();
     }
-}
+
 }
